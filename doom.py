@@ -13,11 +13,6 @@ W2 = WIDTH / 2
 H2 = HEIGHT / 2
 pixelScale = int(WIDTH / matrixW)
 
-def setCord():
-    glViewport(0, 0, WIDTH, HEIGHT)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT)
 
 def pixel(x, y, c):
     r, g, b = int(c[1:3], base=16), int(c[3:5], base=16), int(c[5:], base=16)
@@ -35,46 +30,43 @@ def DrawLine(x1, x2, b1, b2):
         pixel(x, y1, "#ffffff")
 
 def DrawWall():
-    wx, wy, wz, cos, sin = [], [], [], math.cos(PLAYER.XAngle), math.sin(PLAYER.XAngle)
+    wx, wy, wz, cos, sin = [None] * 2, [None] * 2, [None] * 2, math.cos(PLAYER.XAngle), math.sin(PLAYER.XAngle)
     x1 = 40 - PLAYER.x
     y1 = 10 - PLAYER.y
     x2 = 40 - PLAYER.x
     y2 = 290 - PLAYER.y
+    z1 = z2 = 0 - PLAYER.z
     # world x
-    wx.append(x1 * cos - y1 * sin)
+    """wx.append(x1 * cos - y1 * sin)
     wx.append(x2 * cos - y2 * sin)
-    wx.append(wx[0])
-    wx.append(wx[1])
+    
     # world depth
     wy.append(y1 * cos + x1 * sin)
     wy.append(y2 * cos + x2 * sin)
-    wy.append(wy[0])
-    wy.append(wy[1])
+
     # world height 
     wz.append(0 - PLAYER.z + ((PLAYER.YAngle * wy[0]) / 32))
     wz.append(0 - PLAYER.z + ((PLAYER.YAngle * wy[1]) / 32))
-    wz.append(wz[0] + 40)
-    wz.append(wz[1] + 40)
     # screen x and y position
     k = 100
     wx[0] = int(wx[0] * k / wy[0] + W2)
     wy[0] = int(-wz[0] * k / wy[0] + H2) 
     wx[1] = int(wx[1] * k / wy[1] + W2)
-    wy[1] = int(-wz[1] * k / wy[1] + H2) 
-
-    wx[2] = int(wx[2] * k / wy[2] + W2)
-    wy[2] = int(-wz[2] * k / wy[2] + H2) 
-    wx[3] = int(wx[3] * k / wy[3] + W2)
-    wy[3] = int(-wz[3] * k / wy[3] + H2) 
+    wy[1] = int(-wz[1] * k / wy[1] + H2) """
+    wx[0] = x1 * cos - y1 * sin
+    wx[1] = x2 * cos - y2 * sin
+    wy[0] = y1 * cos + x1 * sin
+    wy[1] = y2 * cos + x2 * sin
     
+    print(wx[0], wy[0], wx[1], wy[1])
+
 
     # draw verticies
     #if wx[0] > 0 and wx[0] < WIDTH and wy[0] > 0 and wy[0] < HEIGHT:
     #    pixel(wx[0], wy[0], '#ffffff')
     #if wx[1] > 0 and wx[1] < WIDTH and wy[1] > 0 and wy[1] < HEIGHT:
     #    pixel(wx[1], wy[1], '#ffffff')
-    DrawLine(wx[0], wx[1], wy[0], wy[1])
-    DrawLine(wx[2], wx[3], wy[2], wy[3])
+    #DrawLine(wx[0], wx[1], wy[0], wy[1])
 
 #=========Init================#    
 
@@ -85,13 +77,13 @@ pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)  # lock the mouse
 
 # opengl coordinates origin to left-top
-glViewport(0, 0, WIDTH, HEIGHT);
+"""glViewport(0, 0, WIDTH, HEIGHT);
 glMatrixMode(GL_PROJECTION);
 glLoadIdentity();
 glOrtho(0, WIDTH, HEIGHT, 0, -1, 1);
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
-
+"""
 #Store sin/cos in degrees
 for a in range(360):
     MATH.sin.append(math.sin(a / 180 * math.pi))
@@ -157,7 +149,7 @@ while True:
 
         elif event.type == pygame.MOUSEMOTION:
             dx, dy = event.rel
-            PLAYER.XAngle += dx / 1000
+            #eeeePLAYER.XAngle += dx / 1000
             PLAYER.YAngle += dy
             pygame.mouse.set_pos(screen.get_rect().center)
             mouse_move = True
