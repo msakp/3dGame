@@ -1,17 +1,20 @@
 import pygame
 import math
+import numpy as np
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from Tools import *
-from Player import *
-from Sprites import *
+from Gargabe.Tools import *
+from Gargabe.Player import *
+from Gargabe.Sprites import *
 
 WIDTH, HEIGHT = SIZE = 800, 450
 matrixW, matrixH = 200, 112
 W2 = WIDTH / 2
 H2 = HEIGHT / 2
 pixelScale = int(WIDTH / matrixW)
+
+l, r, t, b, f, n = 0, 200, 200, 0, -200, 0 
 
 
 def pixel(x, y, c):
@@ -30,43 +33,15 @@ def DrawLine(x1, x2, b1, b2):
         pixel(x, y1, "#ffffff")
 
 def DrawWall():
-    wx, wy, wz, cos, sin = [None] * 2, [None] * 2, [None] * 2, math.cos(PLAYER.XAngle), math.sin(PLAYER.XAngle)
-    x1 = 40 - PLAYER.x
-    y1 = 10 - PLAYER.y
-    x2 = 40 - PLAYER.x
-    y2 = 290 - PLAYER.y
-    z1 = z2 = 0 - PLAYER.z
-    # world x
-    """wx.append(x1 * cos - y1 * sin)
-    wx.append(x2 * cos - y2 * sin)
+   coords = [np.array([0, -20, 0]), np.array([[10, -20, 0]])]
+   for vertex in coords: 
+        vertex = vertex.reshape(3, 1)
+        View = map(lambda v: v[0], vertex)
+        Xv, Yv, Zv = View
+        
+        
+
     
-    # world depth
-    wy.append(y1 * cos + x1 * sin)
-    wy.append(y2 * cos + x2 * sin)
-
-    # world height 
-    wz.append(0 - PLAYER.z + ((PLAYER.YAngle * wy[0]) / 32))
-    wz.append(0 - PLAYER.z + ((PLAYER.YAngle * wy[1]) / 32))
-    # screen x and y position
-    k = 100
-    wx[0] = int(wx[0] * k / wy[0] + W2)
-    wy[0] = int(-wz[0] * k / wy[0] + H2) 
-    wx[1] = int(wx[1] * k / wy[1] + W2)
-    wy[1] = int(-wz[1] * k / wy[1] + H2) """
-    wx[0] = x1 * cos - y1 * sin
-    wx[1] = x2 * cos - y2 * sin
-    wy[0] = y1 * cos + x1 * sin
-    wy[1] = y2 * cos + x2 * sin
-    
-    print(wx[0], wy[0], wx[1], wy[1])
-
-
-    # draw verticies
-    #if wx[0] > 0 and wx[0] < WIDTH and wy[0] > 0 and wy[0] < HEIGHT:
-    #    pixel(wx[0], wy[0], '#ffffff')
-    #if wx[1] > 0 and wx[1] < WIDTH and wy[1] > 0 and wy[1] < HEIGHT:
-    #    pixel(wx[1], wy[1], '#ffffff')
-    #DrawLine(wx[0], wx[1], wy[0], wy[1])
 
 #=========Init================#    
 
@@ -77,20 +52,17 @@ pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)  # lock the mouse
 
 # opengl coordinates origin to left-top
-"""glViewport(0, 0, WIDTH, HEIGHT);
+glViewport(0, 0, WIDTH, HEIGHT);
 glMatrixMode(GL_PROJECTION);
 glLoadIdentity();
 glOrtho(0, WIDTH, HEIGHT, 0, -1, 1);
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
-"""
-#Store sin/cos in degrees
-for a in range(360):
-    MATH.sin.append(math.sin(a / 180 * math.pi))
-    MATH.cos.append(math.cos(a / 180 * math.pi))
+
+
 #Init player
-PLAYER = Player(70, -110, 20)
-SPEED = 100 # pixels per second   
+PLAYER = Player(0, 0, 0)
+SPEED = 5 # pixels per second   
 elapsedTime = 0
 move_U = False
 move_D = False
@@ -158,28 +130,28 @@ while True:
     #===========MoveUpdate==============#
     speedOfFrame = elapsedTime * SPEED
     dx = 2 * math.sin(PLAYER.XAngle)
-    dy = 2 * math.cos(PLAYER.XAngle)
+    dz = 2 * math.cos(PLAYER.XAngle)
     if move_F:
-        PLAYER.x += dx
-        PLAYER.y += dy
+        PLAYER.x -= dx
+        PLAYER.z -= dz
 
     if move_B:
-        PLAYER.x -= dx
-        PLAYER.y -= dy
+        PLAYER.x += dx
+        PLAYER.z += dz
             
     if move_R:
        PLAYER.x += dy
-       PLAYER.y -= dx     
+       PLAYER.z -= dz     
 
     if move_L:
         PLAYER.x -= dy
-        PLAYER.y += dx    
+        PLAYER.z += dz    
     
     if move_U:
-        PLAYER.z += 1
+        PLAYER.y += 1
 
     if move_D:
-        PLAYER.z -= 1 
+        PLAYER.y -= 1 
            
     
     if move or mouse_move:
@@ -187,6 +159,7 @@ while True:
         pygame.display.flip()
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         mouse_move = False
+        print(PLAYER.getPos())
         
     #===================================#
     #pixel(20, 20, '#ff0000')

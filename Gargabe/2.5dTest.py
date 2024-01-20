@@ -2,8 +2,8 @@ import pygame
 import os
 import math
 import time
-from Tools import *
-from Sprites import *
+from Gargabe.Tools import *
+from Gargabe.Sprites import *
 from MatrixClasses import *
 
 

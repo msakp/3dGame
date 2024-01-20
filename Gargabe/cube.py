@@ -8,7 +8,7 @@ from OpenGL.GLU import *
 
 WIDTH, HEIGHT = size = 800, 600
 scale = 100
-Angle = 0
+Angle = pi / 4
 
 screen = pygame.display.set_mode(size, DOUBLEBUF|OPENGL)
 glViewport(0, 0, WIDTH, HEIGHT);
@@ -21,21 +21,22 @@ glLoadIdentity();
 clock = pygame.time.Clock()
 
 points = []
-
-points.append(np.matrix([-1, -1, 1]))
-points.append(np.matrix([1, -1, 1]))
-points.append(np.matrix([1, 1, 1]))
-points.append(np.matrix([-1, 1, 1]))
-points.append(np.matrix([-1, -1, -1]))
-points.append(np.matrix([1, -1, -1]))
-points.append(np.matrix([1, 1, -1]))
-points.append(np.matrix([-1, 1, -1]))
+x, y, z = None, None, None # left-right, top-bottom, near-far
+points.append(np.array([-1, -1, 1]))
+points.append(np.array([1, -1, 1]))
+points.append(np.array([1, 1, 1]))
+points.append(np.array([-1, 1, 1]))
+points.append(np.array([-1, -1, -1]))
+points.append(np.array([1, -1, -1]))
+points.append(np.array([1, 1, -1]))
+points.append(np.array([-1, 1, -1]))
 points = [point.reshape(3, 1) for point in points]
 
+
 projection_matrix = np.matrix([
-    [1, 0, 0],
-    [0, 1, 0],
-    
+[1, 0, 0],
+[0, 1, 0],
+
 ])
 
 rotationX_matrix = np.matrix([
@@ -54,27 +55,27 @@ while running:
             running = False
         
 
-    rotationX_matrix = np.matrix([
+    rotationZ_matrix = np.matrix([
     [1, 0, 0],
     [0, cos(Angle), -sin(Angle)],
     [0, sin(Angle), cos(Angle)]
     ])
-    rotationZ_matrix = np.matrix([
+    rotationY_matrix = np.matrix([
     [cos(Angle), -sin(Angle), 0],
     [sin(Angle), cos(Angle), 0],
     [0, 0, 1]
     ])
-    rotationY_matrix = np.matrix([
+    rotationX_matrix = np.matrix([
         [cos(Angle), 0, sin(Angle)],
         [0, 1, 0],
         [-sin(Angle), 0, cos(Angle)]
     ])
     for point in points:
-        rotated = np.dot(rotationY_matrix, point)
+        rotated = np.dot(rotationX_matrix, point)
         projection = np.dot(projection_matrix, rotated)
-        x = int(projection[0][0] * scale) + WIDTH / 2
+        x = int(projection[0][0] * scale) + WIDTH / 2 
         y = int(projection[1][0] * scale) + HEIGHT / 2
-        
+         
         glColor3f(255, 255, 255)
         glPointSize(4)
         glBegin(GL_POINTS)
