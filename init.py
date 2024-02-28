@@ -19,16 +19,14 @@ SCREEN_DIST = int((WIDTH / 2) / math.tan(math.radians(H_FOV)))
 MAX_SCALE = 64
 MIN_SCALE = 0.00390625  
 
-PLAYER_SPEED_PER_TICK = 3
-PLAYER_ROTATION_SPEED_PER_TICK = 1
+PLAYER_SPEED_PER_TICK = 4
 PLAYER_HEIGHT = 45
 
 SSECTOR_ID = 0x8000
 
 class SEG_CLASSES(Enum):
         WALL = 0
-
-
+        PORTAL = 1
 
 pygame.init()
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP,

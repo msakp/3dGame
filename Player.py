@@ -13,7 +13,7 @@ class Player:
         dx, dy = pygame.mouse.get_rel()
         x, y = pygame.mouse.get_pos()
         pygame.mouse.set_pos(x - dx, y - dy)
-        self.angle = self.Engine.norm(self.angle - dx / 4)
+        self.angle = self.Engine.norm(self.angle - dx / 15)
         self.Y_angle -= dy * 1.2
 
 

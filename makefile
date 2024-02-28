@@ -1,2 +1,2 @@
 make:
-	python Engine.py
+	python main.py

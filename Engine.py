@@ -54,10 +54,10 @@ class _3DEngine:
         back_sidedef = self.wad_data.sidedefs[linedef.Back_Sidedef] if linedef.Back_Sidedef != 0xFFFF else None
         return front_sidedef, back_sidedef
     
-    def get_sidedef_sector(self, sidedef: Sidedef):
+    def get_sidedef_sector(self, sidedef: Sidedef) -> Sector: 
         return self.wad_data.sectors[sidedef.Sector_id]
     
-    def get_seg_sidedefs(self, seg: Seg):
+    def get_seg_sidedefs(self, seg: Seg) -> tuple:
         linedef = self.get_seg_linedef(seg)
         front, back =  self.get_linedef_sidedefs(linedef)
         if seg.Direction:
@@ -160,20 +160,25 @@ class _3DEngine:
         return x1, x2, a3
     
     def classify_segment(self, seg: Seg, x1, x2, angle_to_v1):
-        segment_class = None
         if x1 == x2:
             return
         front_sidedef, back_sidedef = self.get_seg_sidedefs(seg)
         if not back_sidedef:
+            return SEG_CLASSES.WALL
         
-            segment_class = SEG_CLASSES.WALL
+        front_sector = self.get_sidedef_sector(front_sidedef)        
+        back_sector = self.get_sidedef_sector(back_sidedef)
         
-        return segment_class
+        # empty lines: no height delta, no mid texture, no light_level delta
+        if front_sector.Ceil_height == back_sector.Ceil_height and\
+            front_sector.Floor_height == back_sector.Floor_height and\
+            front_sector.Light_level == back_sector.Light_level and\
+                front_sidedef.Middle_texture == '-':
+            return None
+        
+        else:
+            return SEG_CLASSES.PORTAL
 
-        
-    
-
-    
     def norm(self, angle): # norms angle to 0 -> 360
         angle %= 360
         return angle + 360 if angle < 0 else angle
@@ -185,6 +190,3 @@ class _3DEngine:
 
 
 
-if __name__ == "__main__":
-    Engine = _3DEngine()
-    Engine.mainLoop()

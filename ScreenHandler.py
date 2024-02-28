@@ -57,6 +57,9 @@ class ScreenHandler:
         d = ort_dist_to_seg * math.cos(math.radians(a_of_x))
         
         return min(MAX_SCALE, max(D / d, MIN_SCALE)) # scale limited by MAX_ / MIN_SCALE (init.py)
+    
+    def vline(self, x, y1, y2, texture, light_level):
+        gfx.vline(self.screen, x, y1, y2, (255, 255, 255))
         
     def draw_wall(self, x1, x2):
         front_sidedef, _ = self.Engine.get_seg_sidedefs(self.handled_seg)
@@ -91,7 +94,7 @@ class ScreenHandler:
             if floor_z < 0: # drawing floor
                 pass
             if wall_texture != '-': # drawing wall
-                gfx.vline(self.screen, x, int(y1 - 1), int(y2), (255, 255, 255))
+                self.vline(x, int(y1 - 1), int(y2), wall_texture, light_level)
 
             y1 += y1_step
             y2 += y2_step
@@ -101,23 +104,25 @@ class ScreenHandler:
             wall_space = set(range(x1, x2))
             intersection = self.free_space & wall_space
         
-            if intersection and len(intersection) == len(wall_space):
-                self.draw_wall(x1, x2 - 1)
-
-            elif intersection:
-                ordered_intersected_space = sorted(intersection)
-                x_s, x_2 = ordered_intersected_space[0], ordered_intersected_space[-1]
-                for x_1, x_2 in zip(ordered_intersected_space, ordered_intersected_space[1:]):
-                    if x_2 - x_1 > 1: 
-                        self.draw_wall(x_s, x_1)
-                        x_s = x_2
-                self.draw_wall(x_s, x_2)
-            
-            self.free_space -= intersection
-        
         else:
             self.Engine.Bsp.travesre_further = False
-            
+            return
+        
+        if len(intersection) == len(wall_space):
+            self.draw_wall(x1, x2 - 1)
+
+        elif intersection:
+            ordered_intersected_space = sorted(intersection)
+            x_s, x_2 = ordered_intersected_space[0], ordered_intersected_space[-1]
+            for x_1, x_2 in zip(ordered_intersected_space, ordered_intersected_space[1:]):
+                if x_2 - x_1 > 1: 
+                    self.draw_wall(x_s, x_1)
+                    x_s = x_2
+            self.draw_wall(x_s, x_2)
+        
+        self.free_space -= intersection
+        
+        
 
         
 
@@ -128,6 +133,7 @@ class ScreenHandler:
         _class = self.Engine.classify_segment(seg, x1, x2, angle_to_v1)
         if _class == SEG_CLASSES.WALL:
             self.clip_wall(x1, x2)
+
         
     
     def draw(self):
